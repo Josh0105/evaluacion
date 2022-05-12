@@ -22,6 +22,7 @@ public class UserService {
     public UserModel guardarUsuario(UserModel usuario){
         usuario.setPassword(getSHA256(usuario.getPassword()));
         //System.out.println(usuario.getPassword());
+        
         return userRepositorie.save(usuario);
     }
     

@@ -27,6 +27,7 @@ public class UserController {
 
     @PostMapping()
     public  UserModel guardarUsuario(@RequestBody UserModel usuario){
-        return this.userService.guardarUsuario(usuario);
+        UserModel nuevoUsuario = this.userService.guardarUsuario(usuario);
+        return nuevoUsuario;
     }
 }
