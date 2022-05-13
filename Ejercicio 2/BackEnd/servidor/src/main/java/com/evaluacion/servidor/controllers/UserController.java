@@ -6,15 +6,21 @@ import java.util.ArrayList;
 
 import com.evaluacion.servidor.models.UserModel;
 import com.evaluacion.servidor.services.UserService;
+import com.evaluacion.servidor.tools.recuperacionRequest;
 import com.evaluacion.servidor.tools.user;
 
+import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -44,8 +50,8 @@ public class UserController {
     }
 
     @GetMapping(path ="/login")
-    public user obtenerUsuarioPorUserName(@RequestParam("username") String user_name,@RequestParam("password") String password){
-        UserModel nuevoUsuario = this.userService.obtenerPorUserName(user_name);
+    public user obtenerUsuarioPorUserName(@RequestParam("username") String username,@RequestParam("password") String password){
+        UserModel nuevoUsuario = this.userService.obtenerPorUserName(username);
         //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
         user usuarioDatos;
         try {
@@ -62,11 +68,40 @@ public class UserController {
             usuarioDatos = null;
             return usuarioDatos;
         }
-        //return usuarioDatos;
-        //return this.userService.obtenerPorUserName(user_name);
     }
 
+    @GetMapping(path ="/recuperar_password")
+    public user recuperarPassword(@RequestBody recuperacionRequest requestRecuperar){
+        //System.out.println(requestRecuperar);
+        UserModel usuarioSolicitado = this.userService.obtenerPorUserName(requestRecuperar.getUsername());
+        System.out.println(usuarioSolicitado.getId_usuario());
+        //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
+        user nuevoUsuarioDatos;
+        try {
+            if(usuarioSolicitado!=null){
+                if((usuarioSolicitado.getFirst_name().equals(requestRecuperar.getFirst_name()))
+                    &&(usuarioSolicitado.getLast_name().equals(requestRecuperar.getLast_name()))
+                    &&(usuarioSolicitado.getLocation().equals(requestRecuperar.getLocation()))
+                    &&(usuarioSolicitado.getRol().equals(requestRecuperar.getRol()))){
 
+                        usuarioSolicitado.setPassword(requestRecuperar.getNewPassword());
+                        usuarioSolicitado = this.userService.guardarUsuario(usuarioSolicitado);
+                        
+                        nuevoUsuarioDatos = new user(usuarioSolicitado.getId_usuario(),usuarioSolicitado.getUsername(), usuarioSolicitado.getFirst_name(), usuarioSolicitado.getLast_name(), usuarioSolicitado.getLocation(), usuarioSolicitado.getRol());
+                        return nuevoUsuarioDatos;
+                }else{
+                    nuevoUsuarioDatos = null;
+                    return nuevoUsuarioDatos;
+                }
+            }else{
+                nuevoUsuarioDatos = null;
+                return nuevoUsuarioDatos;
+            }
+        } catch (Exception e) {
+            nuevoUsuarioDatos = null;
+            return nuevoUsuarioDatos;
+        }
+    }
 
     public String getSHA256(String input){
         String toReturn = null;
