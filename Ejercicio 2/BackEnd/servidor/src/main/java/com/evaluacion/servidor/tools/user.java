@@ -3,15 +3,15 @@ package com.evaluacion.servidor.tools;
 
 public class user {
     private Long id_usuario;
-    private String user_name;
+    private String username;
     private String first_name;
     private String last_name;
     private String location;
     private String rol;
     
-    public user(Long id_usuario, String user_name, String first_name, String last_name, String location, String rol) {
+    public user(Long id_usuario, String username, String first_name, String last_name, String location, String rol) {
         this.id_usuario = id_usuario;
-        this.user_name = user_name;
+        this.username = username;
         this.first_name = first_name;
         this.last_name = last_name;
         this.location = location;
@@ -26,12 +26,12 @@ public class user {
         this.id_usuario = id_usuario;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFirst_name() {
@@ -64,8 +64,9 @@ public class user {
 
     public void setRol(String rol) {
         this.rol = rol;
-    }  
-    
+    }
+
+
     
     
 }

@@ -2,6 +2,7 @@ package com.evaluacion.servidor.models;
 
 import javax.persistence.*;
 
+
 @Entity
 @Table(name="usuario")
 public class UserModel {
@@ -12,7 +13,8 @@ public class UserModel {
     private Long id_usuario;
 
     @Column(unique = true, nullable = false)
-    private String user_name;
+    private String username;
+
     private String first_name;
     private String last_name;
     private String location;
@@ -29,12 +31,14 @@ public class UserModel {
     public void setId_usuario(Long id_usuario) {
         this.id_usuario = id_usuario;
     }
-    public String getUser_name() {
-        return user_name;
+
+    public String getUsername() {
+        return username;
     }
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUsername(String username) {
+        this.username = username;
     }
+
     public String getFirst_name() {
         return first_name;
     }
