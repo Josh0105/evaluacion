@@ -9,18 +9,13 @@ import com.evaluacion.servidor.services.UserService;
 import com.evaluacion.servidor.tools.recuperacionRequest;
 import com.evaluacion.servidor.tools.user;
 
-import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -76,7 +71,7 @@ public class UserController {
         UserModel usuarioSolicitado = this.userService.obtenerPorUserName(requestRecuperar.getUsername());
         System.out.println(usuarioSolicitado.getId_usuario());
         //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
-        user nuevoUsuarioDatos;
+        user nuevoUsuarioDatos=null;
         try {
             if(usuarioSolicitado!=null){
                 if((usuarioSolicitado.getFirst_name().equals(requestRecuperar.getFirst_name()))
@@ -88,15 +83,13 @@ public class UserController {
                         usuarioSolicitado = this.userService.guardarUsuario(usuarioSolicitado);
                         
                         nuevoUsuarioDatos = new user(usuarioSolicitado.getId_usuario(),usuarioSolicitado.getUsername(), usuarioSolicitado.getFirst_name(), usuarioSolicitado.getLast_name(), usuarioSolicitado.getLocation(), usuarioSolicitado.getRol());
-                        return nuevoUsuarioDatos;
+                        //return nuevoUsuarioDatos;
                 }else{
                     nuevoUsuarioDatos = null;
-                    return nuevoUsuarioDatos;
+                    //return nuevoUsuarioDatos;
                 }
-            }else{
-                nuevoUsuarioDatos = null;
-                return nuevoUsuarioDatos;
             }
+            return nuevoUsuarioDatos;
         } catch (Exception e) {
             nuevoUsuarioDatos = null;
             return nuevoUsuarioDatos;
