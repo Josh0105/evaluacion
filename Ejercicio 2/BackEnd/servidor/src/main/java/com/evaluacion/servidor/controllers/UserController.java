@@ -4,19 +4,14 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 
-import com.evaluacion.servidor.com.claro.ListarNitValidos;
-import com.evaluacion.servidor.com.claro.ValidarNit;
-import com.evaluacion.servidor.com.claro.ValidarNitResponse;
 import com.evaluacion.servidor.models.UserModel;
 import com.evaluacion.servidor.services.UserService;
-import com.evaluacion.servidor.servicioSOAP.coneccionClienteSOAP;
+import com.evaluacion.servidor.tools.resultadoResponse;
 import com.evaluacion.servidor.tools.recuperacionRequest;
 import com.evaluacion.servidor.tools.user;
 
-import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,26 +20,32 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
+
 @RestController
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/usuarios")
 public class UserController {
 
+    
     @Autowired
     UserService userService;
 
+    /*
     @Autowired
 	private coneccionClienteSOAP client;
 
     @Value("${WSDL.SOAPClient}")
 	private String clientEndPoint;
 
+    
     private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    public void init() throws Exception {
-		marshaller.setPackagesToScan("com.evaluacion.servidor.com.claro");
-		marshaller.afterPropertiesSet();
-	}
-
+    
+    //public void init() throws Exception {
+	//	marshaller.setPackagesToScan("com.evaluacion.servidor.com.claro");
+	//	marshaller.afterPropertiesSet();
+	//}
+    */
 
     @GetMapping()
     public ArrayList<user> obtenerUsuarios(){
@@ -59,23 +60,39 @@ public class UserController {
     }
     
     @PostMapping()
-    public user guardarUsuario(@RequestBody UserModel usuario){
-        UserModel nuevoUsuario = this.userService.guardarUsuario(usuario);
-        //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
-        user usuarioDatos = new user(nuevoUsuario.getId_usuario(),nuevoUsuario.getUsername(), nuevoUsuario.getFirst_name(), nuevoUsuario.getLast_name(), nuevoUsuario.getLocation(), nuevoUsuario.getRol());
-        return usuarioDatos;
+    public resultadoResponse guardarUsuario(@RequestBody UserModel usuario){
+        resultadoResponse respuesta = new resultadoResponse();
+        UserModel nuevoUsuario = this.userService.obtenerPorUserName(usuario.getUsername());
+        if(nuevoUsuario!=null){
+            respuesta.setStatus(-3);
+            respuesta.setDescripcion("Nombre de usuario ya existente");
+        }else{
+            nuevoUsuario = this.userService.guardarUsuario(usuario);
+            //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
+            if(nuevoUsuario!=null){
+                respuesta.setStatus(1);
+                respuesta.setDescripcion("Usuario Creado Correctamente");
+            }else{
+                respuesta.setStatus(-2);
+                respuesta.setDescripcion("Error en creacion");
+            }
+        }
+        //user usuarioDatos = new user(nuevoUsuario.getId_usuario(),nuevoUsuario.getUsername(), nuevoUsuario.getFirst_name(), nuevoUsuario.getLast_name(), nuevoUsuario.getLocation(), nuevoUsuario.getRol());
+        return respuesta;
     }
 
+    /*
     @GetMapping(path ="/nit")
     public void consultarNit() throws Exception{
-
+		marshaller.setPackagesToScan("com.evaluacion.servidor.com.claro");
+		marshaller.afterPropertiesSet();
         ValidarNit request = new ValidarNit();
         request.setNit("82901201");
         ValidarNitResponse response = (ValidarNitResponse) client.callWebServices(clientEndPoint, request);
         System.out.println(response);
 
     }
-
+    */
 
 
     @GetMapping(path ="/login")
@@ -99,13 +116,14 @@ public class UserController {
         }
     }
 
-    @GetMapping(path ="/recuperar_password")
-    public user recuperarPassword(@RequestBody recuperacionRequest requestRecuperar){
+    @PostMapping(path ="/recuperar_password")
+    public resultadoResponse recuperarPassword(@RequestBody recuperacionRequest requestRecuperar){
+        resultadoResponse respuesta = new resultadoResponse();
         //System.out.println(requestRecuperar);
         UserModel usuarioSolicitado = this.userService.obtenerPorUserName(requestRecuperar.getUsername());
-        System.out.println(usuarioSolicitado.getId_usuario());
+        //System.out.println(usuarioSolicitado.getId_usuario());
         //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
-        user nuevoUsuarioDatos=null;
+        //user nuevoUsuarioDatos=null;
         try {
             if(usuarioSolicitado!=null){
                 if((usuarioSolicitado.getFirst_name().equals(requestRecuperar.getFirst_name()))
@@ -116,17 +134,26 @@ public class UserController {
                         usuarioSolicitado.setPassword(requestRecuperar.getNewPassword());
                         usuarioSolicitado = this.userService.guardarUsuario(usuarioSolicitado);
                         
-                        nuevoUsuarioDatos = new user(usuarioSolicitado.getId_usuario(),usuarioSolicitado.getUsername(), usuarioSolicitado.getFirst_name(), usuarioSolicitado.getLast_name(), usuarioSolicitado.getLocation(), usuarioSolicitado.getRol());
+                        //nuevoUsuarioDatos = new user(usuarioSolicitado.getId_usuario(),usuarioSolicitado.getUsername(), usuarioSolicitado.getFirst_name(), usuarioSolicitado.getLast_name(), usuarioSolicitado.getLocation(), usuarioSolicitado.getRol());
+                        respuesta.setStatus(1);
+                        respuesta.setDescripcion("Constraseña cambiada exitosamente");
                         //return nuevoUsuarioDatos;
                 }else{
-                    nuevoUsuarioDatos = null;
+                    respuesta.setStatus(-2);
+                    respuesta.setDescripcion("No coinciden sus datos personales");
+                    //nuevoUsuarioDatos = null;
                     //return nuevoUsuarioDatos;
                 }
+            }else{
+                respuesta.setStatus(-3);
+                respuesta.setDescripcion("Usuario no existe");                
             }
-            return nuevoUsuarioDatos;
+            return respuesta;
         } catch (Exception e) {
-            nuevoUsuarioDatos = null;
-            return nuevoUsuarioDatos;
+            respuesta.setStatus(-4);
+            respuesta.setDescripcion("Error desconocido");
+            //nuevoUsuarioDatos = null;
+            return respuesta;
         }
     }
 

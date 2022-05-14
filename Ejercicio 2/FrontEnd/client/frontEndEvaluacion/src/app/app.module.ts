@@ -7,12 +7,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { InicioComponent } from './components/inicio/inicio.component';
 import { HeaderPublicoComponent } from './components/header-publico/header-publico.component';
+import { CrearUserComponent } from './components/crear-user/crear-user.component';
+import { RecuperarPasswordComponent } from './components/recuperar-password/recuperar-password.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     InicioComponent,
-    HeaderPublicoComponent
+    HeaderPublicoComponent,
+    CrearUserComponent,
+    RecuperarPasswordComponent
   ],
   imports: [
     BrowserModule,

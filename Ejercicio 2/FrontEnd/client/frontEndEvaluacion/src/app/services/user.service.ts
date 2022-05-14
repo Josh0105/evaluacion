@@ -12,8 +12,8 @@ export class UserService {
     return this.http.get(`${this.URL}/usuarios`);
   }
 
-  getRecuperarPassword(){
-    return this.http.get(`${this.URL}/usuarios/recuperar_password`);
+  RecuperarPassword(json:any){
+    return this.http.post(`${this.URL}/usuarios/recuperar_password`,json);
   }
 
   getLogIn(){
