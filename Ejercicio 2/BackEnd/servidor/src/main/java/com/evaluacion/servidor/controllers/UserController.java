@@ -4,12 +4,19 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 
+import com.evaluacion.servidor.com.claro.ListarNitValidos;
+import com.evaluacion.servidor.com.claro.ValidarNit;
+import com.evaluacion.servidor.com.claro.ValidarNitResponse;
 import com.evaluacion.servidor.models.UserModel;
 import com.evaluacion.servidor.services.UserService;
+import com.evaluacion.servidor.servicioSOAP.coneccionClienteSOAP;
 import com.evaluacion.servidor.tools.recuperacionRequest;
 import com.evaluacion.servidor.tools.user;
 
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,12 +24,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @RequestMapping("/usuarios")
 public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+	private coneccionClienteSOAP client;
+
+    @Value("${WSDL.SOAPClient}")
+	private String clientEndPoint;
+
+    private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+    public void init() throws Exception {
+		marshaller.setPackagesToScan("com.evaluacion.servidor.com.claro");
+		marshaller.afterPropertiesSet();
+	}
+
 
     @GetMapping()
     public ArrayList<user> obtenerUsuarios(){
@@ -43,6 +65,18 @@ public class UserController {
         user usuarioDatos = new user(nuevoUsuario.getId_usuario(),nuevoUsuario.getUsername(), nuevoUsuario.getFirst_name(), nuevoUsuario.getLast_name(), nuevoUsuario.getLocation(), nuevoUsuario.getRol());
         return usuarioDatos;
     }
+
+    @GetMapping(path ="/nit")
+    public void consultarNit() throws Exception{
+
+        ValidarNit request = new ValidarNit();
+        request.setNit("82901201");
+        ValidarNitResponse response = (ValidarNitResponse) client.callWebServices(clientEndPoint, request);
+        System.out.println(response);
+
+    }
+
+
 
     @GetMapping(path ="/login")
     public user obtenerUsuarioPorUserName(@RequestParam("username") String username,@RequestParam("password") String password){
