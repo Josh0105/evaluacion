@@ -1,5 +1,6 @@
 package com.evaluacion.servidor.controllers;
 
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -7,6 +8,8 @@ import java.util.ArrayList;
 import com.evaluacion.servidor.models.UserModel;
 import com.evaluacion.servidor.services.UserService;
 import com.evaluacion.servidor.tools.resultadoResponse;
+import com.evaluacion.servidor.tools.sesionResponse;
+import com.evaluacion.servidor.tools.inicioRequest;
 import com.evaluacion.servidor.tools.recuperacionRequest;
 import com.evaluacion.servidor.tools.user;
 
@@ -66,19 +69,61 @@ public class UserController {
         if(nuevoUsuario!=null){
             respuesta.setStatus(-3);
             respuesta.setDescripcion("Nombre de usuario ya existente");
+            respuesta.setUsername(usuario.getUsername());
         }else{
             nuevoUsuario = this.userService.guardarUsuario(usuario);
             //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
             if(nuevoUsuario!=null){
                 respuesta.setStatus(1);
                 respuesta.setDescripcion("Usuario Creado Correctamente");
+                respuesta.setUsername(usuario.getUsername());
             }else{
                 respuesta.setStatus(-2);
                 respuesta.setDescripcion("Error en creacion");
+                respuesta.setUsername(usuario.getUsername());
             }
         }
         //user usuarioDatos = new user(nuevoUsuario.getId_usuario(),nuevoUsuario.getUsername(), nuevoUsuario.getFirst_name(), nuevoUsuario.getLast_name(), nuevoUsuario.getLocation(), nuevoUsuario.getRol());
         return respuesta;
+    }
+
+    @PostMapping(path ="/cargaMasiva")
+    public ArrayList<resultadoResponse> cargaMasiva(@RequestBody ArrayList<UserModel> usuarios){
+        ArrayList<resultadoResponse> listadoResponse = new ArrayList<resultadoResponse>();        
+        try {
+            
+            for(UserModel element : usuarios){
+                resultadoResponse respuesta = new resultadoResponse();
+                UserModel nuevoUsuario = this.userService.obtenerPorUserName(element.getUsername());
+                if(nuevoUsuario!=null){
+                    respuesta.setStatus(-3);
+                    respuesta.setDescripcion("Nombre de usuario ya existente");
+                    respuesta.setUsername(element.getUsername());
+                }else{
+                    nuevoUsuario = this.userService.guardarUsuario(element);
+                    //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
+                    if(nuevoUsuario!=null){
+                        respuesta.setStatus(1);
+                        respuesta.setDescripcion("Usuario Creado Correctamente");
+                        respuesta.setUsername(element.getUsername());
+                    }else{
+                        respuesta.setStatus(-2);
+                        respuesta.setDescripcion("Error en creacion");
+                        respuesta.setUsername(element.getUsername());
+                    }
+                }
+                listadoResponse.add(respuesta);
+            }            
+        } catch (Exception e) {
+            resultadoResponse respuestaError = new resultadoResponse();
+            respuestaError.setStatus(-4);
+            respuestaError.setDescripcion("No fue posible completar la carga");
+            respuestaError.setUsername("");
+            listadoResponse.add(respuestaError);
+            
+        }
+        //user usuarioDatos = new user(nuevoUsuario.getId_usuario(),nuevoUsuario.getUsername(), nuevoUsuario.getFirst_name(), nuevoUsuario.getLast_name(), nuevoUsuario.getLocation(), nuevoUsuario.getRol());
+        return listadoResponse;
     }
 
     /*
@@ -95,25 +140,34 @@ public class UserController {
     */
 
 
-    @GetMapping(path ="/login")
-    public user obtenerUsuarioPorUserName(@RequestParam("username") String username,@RequestParam("password") String password){
-        UserModel nuevoUsuario = this.userService.obtenerPorUserName(username);
+    @PostMapping(path ="/login")
+    public sesionResponse obtenerUsuarioPorUserName(@RequestBody inicioRequest requestInicio){
+        UserModel usuarioLogin = this.userService.obtenerPorUserName(requestInicio.getUsername());
+        sesionResponse respuesta = new sesionResponse();
         //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
-        user usuarioDatos;
+        //user usuarioDatos;
         try {
-            usuarioDatos = new user(nuevoUsuario.getId_usuario(),nuevoUsuario.getUsername(), nuevoUsuario.getFirst_name(), nuevoUsuario.getLast_name(), nuevoUsuario.getLocation(), nuevoUsuario.getRol());
-            if(nuevoUsuario.getPassword().equals(getSHA256(password))){
-                System.out.println("logeo correcto");
-                return usuarioDatos;
+            //usuarioDatos = new user(nuevoUsuario.getId_usuario(),nuevoUsuario.getUsername(), nuevoUsuario.getFirst_name(), nuevoUsuario.getLast_name(), nuevoUsuario.getLocation(), nuevoUsuario.getRol());
+            if(usuarioLogin.getPassword().equals(getSHA256(requestInicio.getPassword()))){
+                respuesta.setStatus(1);
+                respuesta.setDescripcion("Logueo Correcto");
+                respuesta.setUsername(usuarioLogin.getUsername());
+                //System.out.println("logeo correcto");
+                //return usuarioDatos;
             }else{
-                System.out.println("logeo incorrecto");
-                usuarioDatos = null;
-                return usuarioDatos;
+                respuesta.setStatus(-2);
+                respuesta.setDescripcion("Password incorrecta");
+                //System.out.println("logeo incorrecto");
+                //usuarioDatos = null;
+                //return usuarioDatos;
             }
         } catch (Exception e) {
-            usuarioDatos = null;
-            return usuarioDatos;
+            respuesta.setStatus(-3);
+            respuesta.setDescripcion("Usuario incorrecto");
+            //usuarioDatos = null;
+            //return usuarioDatos;
         }
+        return respuesta;
     }
 
     @PostMapping(path ="/recuperar_password")
@@ -124,6 +178,11 @@ public class UserController {
         //System.out.println(usuarioSolicitado.getId_usuario());
         //return "{\"nombre\": "+ " \""+ nuevoUsuario.getFirst_name() + "\"}";
         //user nuevoUsuarioDatos=null;
+        if(requestRecuperar.getNewPassword()==null){
+            respuesta.setStatus(-5);
+            respuesta.setDescripcion("Contraseña no recibida correctamente");
+            return respuesta;            
+        }
         try {
             if(usuarioSolicitado!=null){
                 if((usuarioSolicitado.getFirst_name().equals(requestRecuperar.getFirst_name()))

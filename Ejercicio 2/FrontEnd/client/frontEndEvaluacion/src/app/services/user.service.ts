@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -16,11 +16,16 @@ export class UserService {
     return this.http.post(`${this.URL}/usuarios/recuperar_password`,json);
   }
 
-  getLogIn(){
-    return this.http.get(`${this.URL}/usuarios/login`);
+  postLogin(json:any){
+    return this.http.post(`${this.URL}/usuarios/login`,json);
   }
 
   setUsuario(json:any){
     return this.http.post(`${this.URL}/usuarios`,json);
   }
+
+  cargaMasiva(lista:any){
+    return this.http.post(`${this.URL}/usuarios/cargaMasiva`,lista);
+  }
+
 }

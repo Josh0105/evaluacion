@@ -49,7 +49,7 @@ export class CrearUserComponent implements OnInit {
           this.service.setUsuario(json).subscribe(
               (res:any)=>{
                   //window.alert(res);
-                  console.log(res);
+                  //console.log(res);
                   //this.texto2 = res.resultado;
                   if(res.status==1){
                       window.alert("Usuario creado Correctamente");

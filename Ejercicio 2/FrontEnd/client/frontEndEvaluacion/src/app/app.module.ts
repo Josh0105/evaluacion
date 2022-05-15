@@ -9,6 +9,11 @@ import { InicioComponent } from './components/inicio/inicio.component';
 import { HeaderPublicoComponent } from './components/header-publico/header-publico.component';
 import { CrearUserComponent } from './components/crear-user/crear-user.component';
 import { RecuperarPasswordComponent } from './components/recuperar-password/recuperar-password.component';
+import { LoginComponent } from './components/login/login.component';
+import { ConsultarNitComponent } from './components/consultar-nit/consultar-nit.component';
+import { HeaderUserComponent } from './components/header-user/header-user.component';
+import { ListarNitComponent } from './components/listar-nit/listar-nit.component';
+import { CargaMasivaComponent } from './components/carga-masiva/carga-masiva.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +21,12 @@ import { RecuperarPasswordComponent } from './components/recuperar-password/recu
     InicioComponent,
     HeaderPublicoComponent,
     CrearUserComponent,
-    RecuperarPasswordComponent
+    RecuperarPasswordComponent,
+    LoginComponent,
+    ConsultarNitComponent,
+    HeaderUserComponent,
+    ListarNitComponent,
+    CargaMasivaComponent
   ],
   imports: [
     BrowserModule,

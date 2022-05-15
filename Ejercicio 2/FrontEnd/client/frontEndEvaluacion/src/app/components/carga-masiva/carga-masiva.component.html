@@ -1,0 +1,33 @@
+<app-header-user></app-header-user>
+
+<div class="container">
+    <div class="row mb-12">
+        <div class="col-xxl-4 themed-grid-col2"></div>
+        <div class="col-xxl-4 themed-grid-col2">
+            <form id="cargaForm">
+                <div class="mb-4">
+                    <input type="file" (change)="fileChanged($event)" id="file-input" class="form-control" accept=".xml" required/>
+                </div>
+                <div class="mb-4">
+                <div class="mb-12 justify-content-md-center">
+                    <button type="button" class="btn btn-primary" (click)="leerArchivo()">Leer Archivo</button>
+                </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-xxl-4 themed-grid-col2"></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-12 justify-content-md-center">
+        <div class="col-8 themed-grid-col">
+            <form id="Envio">
+                <h6 class="h6 mb-0 text-gray-800">Consola:</h6>
+                <div class="mb-3" id="cuadro1">
+                    <textarea readonly="readonly" rows="10" class="form-control" aria-label="With textarea">{{consola}}</textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

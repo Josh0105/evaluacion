@@ -12,7 +12,7 @@ export class RecuperarPasswordComponent implements OnInit {
   location:any;
   username:any;
   rol:any;
-  newpassword:any;
+  newPassword:any;
   confirmNewpassword:any;
 
 
@@ -22,7 +22,7 @@ export class RecuperarPasswordComponent implements OnInit {
     this.location="";
     this.username="";
     this.rol="admin";
-    this.newpassword="";
+    this.newPassword="";
     this.confirmNewpassword="";
    }
 
@@ -32,15 +32,15 @@ export class RecuperarPasswordComponent implements OnInit {
 
   Registrar(){
       //window.alert(this.texto1)
-      if((this.first_name!="")&&(this.last_name!="")&&(this.location!="")&&(this.username!="")&&(this.rol!="")&&(this.newpassword!="")&&(this.confirmNewpassword!="")){
-          if(this.newpassword==this.confirmNewpassword){
+      if((this.first_name!="")&&(this.last_name!="")&&(this.location!="")&&(this.username!="")&&(this.rol!="")&&(this.newPassword!="")&&(this.confirmNewpassword!="")){
+          if(this.newPassword==this.confirmNewpassword){
               var json = {
                   "first_name": this.first_name,
                   "last_name" : this.last_name,
                   "location" : this.location,
                   "username" : this.username,
                   "rol" : this.rol,
-                  "newpassword" : this.newpassword
+                  "newPassword" : this.newPassword
 
               }
           //console.log(json);
@@ -48,7 +48,7 @@ export class RecuperarPasswordComponent implements OnInit {
           this.service.RecuperarPassword(json).subscribe(
               (res:any)=>{
                   //window.alert(res);
-                  console.log(res);
+                  //console.log(res);
                   //this.texto2 = res.resultado;
                   if(res.status==1){
                       window.alert("Contraseña cambiada correctamente");

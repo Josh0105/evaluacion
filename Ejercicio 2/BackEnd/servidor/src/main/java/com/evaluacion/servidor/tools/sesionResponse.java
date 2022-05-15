@@ -1,17 +1,16 @@
 package com.evaluacion.servidor.tools;
 
-public class resultadoResponse {
+public class sesionResponse {
     private int status;
     private String descripcion;
     private String username;
     
-    public resultadoResponse() {
+    public sesionResponse() {
         this.status = -1;
         this.descripcion = "Error desconocido";
         this.username = "";
     }
 
-    
     public String getUsername() {
         return username;
     }
