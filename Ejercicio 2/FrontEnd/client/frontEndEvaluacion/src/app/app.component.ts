@@ -7,4 +7,12 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'frontEndEvaluacion';
+
+  ngOnInit(): void {
+    if(window.location.pathname=='/'){
+      window.location.href="inicio";
+    }
+  }
+
 }
+
